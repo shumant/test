@@ -1,0 +1,263 @@
+<html ng-app="staffManagerApp">
+<head>
+    <meta content="text/html; charset=UTF-8" />
+    <title>Система учета сотрудников</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link href='./css/bootstrap.css' rel="stylesheet" type="text/css" />
+    <link href='./css/main.css' rel="stylesheet" type="text/css" />
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular-animate.js"></script>
+    <script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-1.2.4.js"></script>
+    <script type="text/javascript" src="./js/app.js"></script>
+</head>
+
+<body ng-controller="StaffCtrl">
+
+<div class="container" style="margin-top: 20px">
+    <div class="panel panel-default">
+
+        <div class="panel-heading">
+            <h1 style="text-align: center">Система учета сотрудников</h1>
+        </div>
+        <div class = "pull-right" style="margin: 10px">
+            <button type="button" class="btn btn-success" ng-click="newContact()">
+            <i class="glyphicon glyphicon-plus"></i> Добавить сотрудника</button>
+        </div>
+
+        <div class="panel-body">
+        <table class="table table-striped" style="text-align: center">
+            <thead>
+            <tr>
+                <th>ФИО</th>
+                <th class="cell-sex">Пол</th>
+                <th>Должность</th>
+                <th class="cell-age">Возраст</th>
+                <th>Фото</th>
+                <th>Описание</th>
+                <th class="cell-edit"></th>
+                <th class="cell-delete"></th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr ng-repeat="contact in contacts">
+                <td>{{contact.name}}</td>
+                <td>{{contact.sex}}</td>
+                <td>{{contact.position}}</td>
+                <td>{{contact.age}}</td>
+                <td><img ng-src="{{contact.photo}}" class="img-rounded" width="100px" ng-click="openPhoto(contact.uuid)"/></td>
+                <td>{{contact.desc}}</td>
+                <td><button ng-click="edit(contact.uuid)" class="btn btn-warning">Редактировать</button></td>
+                <td><button ng-click="delete(contact.uuid)" class="btn btn-danger">Удалить</button></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="parent-popup" ng-show="showEditContact">
+        <div class="popup">
+            <div class="modal-content">
+                <form name="form" >
+
+                    <div class="modal-header">
+                    <button type="button"
+                        class="close"
+                        ng-click="cancel()"
+                        data-dismiss="modal"
+                        aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Редактировать запись</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                            <label class="col-lg-3 control-label">ФИО:</label>
+                                <div class="col-lg-8">
+                                    <input type="text"
+                                           class="form-control"
+                                           ng-model="selectedcontact.name"
+                                           ng-required="true"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 control-label">Пол:</label>
+                                <div class="col-lg-8">
+                                    <label class="radio-inline">
+                                        <input type="radio" ng-model="selectedcontact.sex" value="Муж."/>Муж.</label>
+                                    <label class="radio-inline">
+                                        <input type="radio" ng-model="selectedcontact.sex" value="Жен."/>Жен.</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 control-label">Должность:</label>
+                                <div class="col-lg-8">
+                                    <input type="text"
+                                           class="form-control"
+                                           ng-model="selectedcontact.position"
+                                           ng-required="true"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 control-label">Возраст:</label>
+                                <div class="col-lg-8">
+                                    <input type="text"
+                                           class="form-control"
+                                           ng-model="selectedcontact.age"
+                                           ng-required="true"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 control-label">Фото URL:</label>
+                                <div class="col-lg-8">
+                                    <input type="text"
+                                           class="form-control"
+                                           ng-model="selectedcontact.photo"
+                                           ng-required="true"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-lg-3 control-label">Описание:</label>
+                                <div class="col-lg-8">
+                                    <input type="text"
+                                    class="form-control"
+                                    ng-model="selectedcontact.desc"
+                                    ng-required="true"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button"
+                        ng-click="save()"
+                        class="btn btn-success">
+                        Сохранить
+                        </button>
+                        <button type="button"
+                        ng-click="cancel()"
+                        class="btn btn-danger">
+                        Отмена
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="parent-popup" ng-show="showNewContact">
+        <div class="popup">
+            <div class="modal-content">
+                <form name="form" >
+                    <div class="modal-header">
+                        <button type="button"
+                                class="close"
+                                ng-click="cancel()"
+                                data-dismiss="modal"
+                                aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title">Добавить новую запись</h4>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="form-horizontal">
+                            <div class="form-group">
+                                <label class="col-lg-3 control-label">ФИО:</label>
+                                <div class="col-lg-8">
+                                    <input type="text"
+                                           class="form-control"
+                                           ng-model="newcontact.name"
+                                           ng-required="true"/>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-lg-3 control-label">Пол:</label>
+                                <div class="col-lg-8">
+                                    <label class="radio-inline">
+                                        <input type="radio" ng-model="newcontact.sex"
+                                               value="Муж." ng-required="true"/>Муж.</label>
+                                    <label class="radio-inline">
+                                        <input type="radio" ng-model="newcontact.sex"
+                                               value="Жен." ng-required="true"/>Жен.</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-lg-3 control-label">Должность:</label>
+                                <div class="col-lg-8">
+                                    <input type="text"
+                                           class="form-control"
+                                           ng-model="newcontact.position"
+                                           ng-required="true"/>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-lg-3 control-label">Возраст:</label>
+                                    <div class="col-lg-8">
+                                        <input type="text"
+                                               class="form-control"
+                                               ng-model="newcontact.age"
+                                               ng-required="true"/>
+                                    </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-lg-3 control-label">Фото URL:</label>
+                                    <div class="col-lg-8">
+                                        <input type="text"
+                                               class="form-control"
+                                               ng-model="newcontact.photo"
+                                               ng-required="true"/>
+                                    </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="col-lg-3 control-label">Описание:</label>
+                                    <div class="col-lg-8">
+                                        <input type="text"
+                                               class="form-control"
+                                               ng-model="newcontact.desc"
+                                               ng-required="true"/>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button"
+                                ng-click="add()"
+                                ng-disabled="form.$invalid"
+                                class="btn btn-success">
+                                Добавить
+                        </button>
+                        <button type="button"
+                                ng-click="cancel()"
+                                class="btn btn-danger">
+                                Отмена
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="parent-popup" ng-show="showPhoto">
+        <div class="popup">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <img class="center" ng-src="{{selectedcontact.photo}}" height="400px"/>
+                </div>
+                <div class="modal-footer">
+                    <button type="button"
+                            ng-click="cancel()"
+                            class="btn btn-danger">
+                            Закрыть
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</body>
+</html>

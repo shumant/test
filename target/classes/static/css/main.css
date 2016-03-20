@@ -1,0 +1,45 @@
+.parent-popup {
+    background: rgba(0, 0, 0, 0.55);
+    height: 100%;
+    position: fixed;
+    width: 100%;
+    z-index: 100;
+    top: 0;
+    left: 0;
+}
+
+.popup {
+    width: 700px;
+    height: 500px;
+    position: absolute;
+    top: 50%; left: 50%;
+    margin-left: -350px;
+    margin-top: -250px;
+}
+
+.cell-edit{
+    width: 145px;
+}
+
+.cell-delete {
+    width: 100px;
+}
+
+.cell-sex{
+    width: 55px;
+}
+
+.cell-age{
+    width: 84px;
+}
+
+th{
+    text-align: center;
+}
+
+img.center{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 6px;
+}
